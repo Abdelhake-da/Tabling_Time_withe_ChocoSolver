@@ -5,12 +5,12 @@ public class TData {
     public TData(){
 
         promotion.Matieres= new TMatiere[]{
-                new TMatiere("bdd"   , 2, 3, 1,new String[]{"toto1","toto2"}),
-                new TMatiere("thl"   , 2, 2, 1,new String[]{"toto1","toto2"}),
-                new TMatiere("rc"    , 2, 2, 1,new String[]{"toto1","toto2"}),
-                new TMatiere("poo"   , 2, 0, 1,new String[]{"toto1","toto2"}),
-                new TMatiere("se"    , 2, 2, 1,new String[]{"toto1","toto2"}),
-                new TMatiere("devweb", 2, 0, 1,new String[]{"toto1","toto2"})
+                new TMatiere("bdd"   , 2, 3, 1,new String[]{"PBBD1","PBBD2"}),
+                new TMatiere("thl"   , 2, 2, 1,new String[]{"PTHL1","PTHL2"}),
+                new TMatiere("rc"    , 2, 2, 1,new String[]{"PRC1","PRC2"}),
+                new TMatiere("poo"   , 2, 0, 1,new String[]{"PPOO1","PPOO2"}),
+                new TMatiere("se"    , 2, 2, 1,new String[]{"PSE1","PSE2"}),
+                new TMatiere("devweb", 2, 0, 1,new String[]{"PDEVWEB1","PDEVWEB2"})
                 };
         promotion.Journees=new TJournee[]{
                 new TJournee("dimanche",new String[]{"S1","S2","S3","S4","S5","S6"})
@@ -20,7 +20,7 @@ public class TData {
                , new TJournee("jeudi"   ,new String[]{"S1","S2","S3","S4","S5","S6"})
             };
         promotion.Occupation=new TOccupation(
-                new String[]{"A1","A2"},
+                new String[]{"A1"},
                 new String[]{"Info1","Info2","Info3"},
                 new String[]{"Tp1","Tp2","Tp3"}
                 );
@@ -99,6 +99,23 @@ public class TData {
             }
         }
         return new int[]{0,0};
+    }
+    public int getLeNombreTotaleDesProf(){
+        int somme=0;
+        for (int i=0;i<promotion.Matieres.length;i++){
+            somme+=promotion.Matieres[i].Profs.length;
+            }
+        return somme;
+    }
+    public int getLeNombreMaxDesProf(){
+        int max=0;
+        for (int i=0;i<promotion.Matieres.length;i++){
+            if (max<promotion.Matieres[i].Profs.length){
+                max=promotion.Matieres[i].Profs.length;
+            }
+
+        }
+        return max;
     }
     }
 

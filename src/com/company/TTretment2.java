@@ -8,16 +8,20 @@ import org.chocosolver.solver.variables.IntVar;
 public class TTretment2 {
     Model model=new Model("emploi du temp");
     TData data;
-    BoolVar TDs[][][][];
-    BoolVar TPs[][][][];
-    BoolVar Cours[][][][];
+    BoolVar TDs[][][][][];
+    BoolVar TPs[][][][][];
+    BoolVar Cours[][][][][];
     public TTretment2(TData data) {
         this.data = data;
     }
     public void SolvetProblem(){
-        TDs=new BoolVar[data.getNbSeancesHoraireParSemaine()][data.getNbGroups()][data.getNbSalleTDs()][data.getNbSeancesTDsParSemaine()];
-        TPs=new BoolVar[data.getNbSeancesHoraireParSemaine()][data.getNbGroups()][data.getNbSalleTPs()][data.getNbSeancesTPsParSemaine()];
-        Cours=new BoolVar[data.getNbSeancesHoraireParSemaine()][data.getNbSection()][data.getNbSalleCours()][data.getNbSeancesCoursParSemaine()];
+        TDs=new BoolVar[data.getNbSeancesHoraireParSemaine()][data.getNbGroups()][data.getNbSalleTDs()][data.promotion.Matieres.length][data.getLeNombreMaxDesProf()];
+        TPs=new BoolVar[data.getNbSeancesHoraireParSemaine()][data.getNbGroups()][data.getNbSalleTPs()][data.promotion.Matieres.length][data.getLeNombreMaxDesProf()];
+        Cours=new BoolVar[data.getNbSeancesHoraireParSemaine()][data.getNbSection()][data.getNbSalleCours()][data.promotion.Matieres.length][data.getLeNombreMaxDesProf()];
+
+
+
+
         SolvetLeProblemDeTDs();
         SolvetLeProblemDeTPs();
         SolvetLeProblemDeCours();
@@ -27,181 +31,305 @@ public class TTretment2 {
 
         solver.findSolution();
         printemploi();
+        AfficheTds();
+        AfficheTps();
+        AfficheCours();
 
     }
     public void SolvetLeProblemDeTDs(){
         for (int i=0;i<data.getNbSeancesHoraireParSemaine();i++){
             for (int j=0;j<data.getNbGroups();j++){
                 for (int k=0;k<data.getNbSalleTDs();k++){
-                    for (int l=0;l<data.getNbSeancesTDsParSemaine();l++){
-                        TDs[i][j][k][l]=model.boolVar();
+                    for (int l=0;l<data.promotion.Matieres.length;l++){
+                        for(int m=0;m< data.getLeNombreMaxDesProf();m++){
+                            TDs[i][j][k][l][m]=model.boolVar();
+                        }
+
                     }
                 }
             }
         }
         //fi seanse wahda may9adoch ya9ro des group ktar mal li salle li kaynin
-
         for (int i=0;i<data.getNbSeancesHoraireParSemaine();i++){
             for (int k=0;k<data.getNbSalleTDs();k++){
                 BoolVar tab[]=new BoolVar[0];
                 for (int j=0;j<data.getNbGroups();j++){
-                    for (int l=0;l<data.getNbSeancesTDsParSemaine();l++){
-                        tab=addBoolVar(tab.length,tab,TDs[i][j][k][l]);
+                    for (int l=0;l<data.promotion.Matieres.length;l++){
+                        for(int m=0;m< data.getLeNombreMaxDesProf();m++) {
+                            tab = addBoolVar(tab.length, tab, TDs[i][j][k][l][m]);
+                        }
                     }
                 }
                 model.sum(tab,"<",2).post();
             }
 
         }
-        //kol group y9ad ya9ra hisa wahda ta3 td fi ga3 lhisas
+        //kol group y9ad ya9ra mada wahda ta3 td fi ga3 lhisas
         for (int j=0;j<data.getNbGroups();j++){
-            for (int l=0;l<data.getNbSeancesTDsParSemaine();l++){
+            for (int l=0;l<data.promotion.Matieres.length;l++){
                 BoolVar tab[]=new BoolVar[0];
                 for (int k=0;k<data.getNbSalleTDs();k++){
                     for (int i=0;i<data.getNbSeancesHoraireParSemaine();i++){
-                        tab=addBoolVar(tab.length,tab,TDs[i][j][k][l]);
+                        for (int m=0;m<data.getLeNombreMaxDesProf();m++){
+                            tab=addBoolVar(tab.length,tab,TDs[i][j][k][l][m]);
+                        }
+
                     }
                 }
-                model.sum(tab,"=",1).post();
+                model.sum(tab,"=",data.promotion.Matieres[l].NbTDsParSemaine).post();
             }
         }
-        //
+
+        //fi hisa wahda w group wahad w salle wahda tan9ra mada wahda
         for (int i=0;i<data.getNbSeancesHoraireParSemaine();i++){
             for (int j=0;j<data.getNbGroups();j++){
                 for (int k=0;k<data.getNbSalleTDs();k++){
                     BoolVar tab[]=new BoolVar[0];
-                    for (int l=0;l<data.getNbSeancesTDsParSemaine();l++){
-                        tab=addBoolVar(tab.length,tab,TDs[i][j][k][l]);
+                    for (int l=0;l<data.promotion.Matieres.length;l++){
+                        for(int m=0;m<data.promotion.Matieres[l].Profs.length;m++) {
+                            tab = addBoolVar(tab.length, tab, TDs[i][j][k][l][m]);
+                        }
                     }
                     model.sum(tab,"<",2).post();
                 }
 
             }
         }
+        //hisa wahda y9ad kol group ya9ra fiha mada wahda
+        for (int i=0;i<data.getNbSeancesHoraireParSemaine();i++){
+            for (int j=0;j<data.getNbGroups();j++){
+                BoolVar tab[]=new BoolVar[0];
+                for (int k=0;k<data.getNbSalleTDs();k++){
+                    for (int l=0;l<data.promotion.Matieres.length;l++){
+                        for(int m=0;m<data.promotion.Matieres[l].Profs.length;m++) {
+                            tab = addBoolVar(tab.length, tab, TDs[i][j][k][l][m]);
+                        }
+                    }
+                }
+                model.sum(tab,"<",2).post();
+            }
+        }
+        //
+        for (int j=0;j<data.getNbGroups();j++){
+            for (int l=0;l<data.promotion.Matieres.length;l++){
+                for(int m=0;m<data.promotion.Matieres[l].Profs.length;m++) {
+                    BoolVar tab[]=new BoolVar[0];
+                    for (int i=0;i<data.getNbSeancesHoraireParSemaine();i++){
+                        for (int k=0;k<data.getNbSalleTDs();k++){
+                            tab = addBoolVar(tab.length, tab, TDs[i][j][k][l][m]);
+                        }
+                    }
+                    model.sum(tab,"=", model.intVar( new int[]{0,data.promotion.Matieres[l].NbTDsParSemaine})).post();
+                }
 
+            }
+        }
     }
     public void SolvetLeProblemDeTPs(){
         for (int i=0;i<data.getNbSeancesHoraireParSemaine();i++){
             for (int j=0;j<data.getNbGroups();j++){
                 for (int k=0;k<data.getNbSalleTPs();k++){
-                    for (int l=0;l<data.getNbSeancesTPsParSemaine();l++){
-                        TPs[i][j][k][l]=model.boolVar();
+                    for (int l=0;l<data.promotion.Matieres.length;l++){
+                        for(int m=0;m< data.getLeNombreMaxDesProf();m++){
+                            TPs[i][j][k][l][m]=model.boolVar();
+                        }
+
                     }
                 }
             }
         }
         //fi seanse wahda may9adoch ya9ro des group ktar mal li salle li kaynin
-
         for (int i=0;i<data.getNbSeancesHoraireParSemaine();i++){
             for (int k=0;k<data.getNbSalleTPs();k++){
                 BoolVar tab[]=new BoolVar[0];
                 for (int j=0;j<data.getNbGroups();j++){
-                    for (int l=0;l<data.getNbSeancesTPsParSemaine();l++){
-                        tab=addBoolVar(tab.length,tab,TPs[i][j][k][l]);
+                    for (int l=0;l<data.promotion.Matieres.length;l++){
+                        for(int m=0;m< data.getLeNombreMaxDesProf();m++) {
+                            tab = addBoolVar(tab.length, tab, TPs[i][j][k][l][m]);
+                        }
                     }
                 }
                 model.sum(tab,"<",2).post();
             }
 
         }
-        //kol group y9ad ya9ra hisa wahda ta3 td fi ga3 lhisas
+        //kol group y9ad ya9ra mada wahda ta3 td fi ga3 lhisas
         for (int j=0;j<data.getNbGroups();j++){
-            for (int l=0;l<data.getNbSeancesTPsParSemaine();l++){
+            for (int l=0;l<data.promotion.Matieres.length;l++){
                 BoolVar tab[]=new BoolVar[0];
                 for (int k=0;k<data.getNbSalleTPs();k++){
                     for (int i=0;i<data.getNbSeancesHoraireParSemaine();i++){
-                        tab=addBoolVar(tab.length,tab,TPs[i][j][k][l]);
+                        for (int m=0;m<data.getLeNombreMaxDesProf();m++){
+                            tab=addBoolVar(tab.length,tab,TPs[i][j][k][l][m]);
+                        }
+
                     }
                 }
-                model.sum(tab,"=",1).post();
+                model.sum(tab,"=",data.promotion.Matieres[l].NbTPsParSemaine).post();
             }
         }
-        //
+
+        //fi hisa wahda w group wahad w salle wahda tan9ra mada wahda
         for (int i=0;i<data.getNbSeancesHoraireParSemaine();i++){
             for (int j=0;j<data.getNbGroups();j++){
                 for (int k=0;k<data.getNbSalleTPs();k++){
                     BoolVar tab[]=new BoolVar[0];
-                    for (int l=0;l<data.getNbSeancesTPsParSemaine();l++){
-                        tab=addBoolVar(tab.length,tab,TPs[i][j][k][l]);
+                    for (int l=0;l<data.promotion.Matieres.length;l++){
+                        for(int m=0;m<data.promotion.Matieres[l].Profs.length;m++) {
+                            tab = addBoolVar(tab.length, tab, TPs[i][j][k][l][m]);
+                        }
                     }
                     model.sum(tab,"<",2).post();
                 }
 
             }
         }
+        //hisa wahda y9ad kol group ya9ra fiha mada wahda
+        for (int i=0;i<data.getNbSeancesHoraireParSemaine();i++){
+            for (int j=0;j<data.getNbGroups();j++){
+                BoolVar tab[]=new BoolVar[0];
+                for (int k=0;k<data.getNbSalleTPs();k++){
+                    for (int l=0;l<data.promotion.Matieres.length;l++){
+                        for(int m=0;m<data.promotion.Matieres[l].Profs.length;m++) {
+                            tab = addBoolVar(tab.length, tab, TPs[i][j][k][l][m]);
+                        }
+                    }
+                }
+                model.sum(tab,"<",2).post();
+            }
+        }
+        //
+        for (int j=0;j<data.getNbGroups();j++){
+            for (int l=0;l<data.promotion.Matieres.length;l++){
+                for(int m=0;m<data.promotion.Matieres[l].Profs.length;m++) {
+                    BoolVar tab[]=new BoolVar[0];
+                    for (int i=0;i<data.getNbSeancesHoraireParSemaine();i++){
+                        for (int k=0;k<data.getNbSalleTPs();k++){
+                            tab = addBoolVar(tab.length, tab, TPs[i][j][k][l][m]);
+                        }
+                    }
+                    model.sum(tab,"=", model.intVar( new int[]{0,data.promotion.Matieres[l].NbTPsParSemaine})).post();
+                }
 
+            }
+        }
     }
     public void SolvetLeProblemDeCours(){
         for (int i=0;i<data.getNbSeancesHoraireParSemaine();i++){
             for (int j=0;j<data.getNbSection();j++){
                 for (int k=0;k<data.getNbSalleCours();k++){
-                    for (int l=0;l<data.getNbSeancesCoursParSemaine();l++){
-                        Cours[i][j][k][l]=model.boolVar();
+                    for (int l=0;l<data.promotion.Matieres.length;l++){
+                        for(int m=0;m< data.getLeNombreMaxDesProf();m++){
+                            Cours[i][j][k][l][m]=model.boolVar();
+                        }
+
                     }
                 }
             }
         }
-
         //fi seanse wahda may9adoch ya9ro des group ktar mal li salle li kaynin
-
         for (int i=0;i<data.getNbSeancesHoraireParSemaine();i++){
             for (int k=0;k<data.getNbSalleCours();k++){
                 BoolVar tab[]=new BoolVar[0];
                 for (int j=0;j<data.getNbSection();j++){
-                    for (int l=0;l<data.getNbSeancesCoursParSemaine();l++){
-                        tab=addBoolVar(tab.length,tab,Cours[i][j][k][l]);
+                    for (int l=0;l<data.promotion.Matieres.length;l++){
+                        for(int m=0;m< data.getLeNombreMaxDesProf();m++) {
+                            tab = addBoolVar(tab.length, tab, Cours[i][j][k][l][m]);
+                        }
                     }
                 }
                 model.sum(tab,"<",2).post();
             }
 
         }
-        //kol group y9ad ya9ra hisa wahda ta3 td fi ga3 lhisas
+        //kol group y9ad ya9ra mada wahda ta3 td fi ga3 lhisas
         for (int j=0;j<data.getNbSection();j++){
-            for (int l=0;l<data.getNbSeancesCoursParSemaine();l++){
+            for (int l=0;l<data.promotion.Matieres.length;l++){
                 BoolVar tab[]=new BoolVar[0];
                 for (int k=0;k<data.getNbSalleCours();k++){
                     for (int i=0;i<data.getNbSeancesHoraireParSemaine();i++){
-                        tab=addBoolVar(tab.length,tab,Cours[i][j][k][l]);
+                        for (int m=0;m<data.getLeNombreMaxDesProf();m++){
+                            tab=addBoolVar(tab.length,tab,Cours[i][j][k][l][m]);
+                        }
+
                     }
                 }
-                model.sum(tab,"=",1).post();
+                model.sum(tab,"=",data.promotion.Matieres[l].NbCoursParSemaine).post();
             }
         }
-        //
+
+        //fi hisa wahda w group wahad w salle wahda tan9ra mada wahda
         for (int i=0;i<data.getNbSeancesHoraireParSemaine();i++){
             for (int j=0;j<data.getNbSection();j++){
                 for (int k=0;k<data.getNbSalleCours();k++){
                     BoolVar tab[]=new BoolVar[0];
-                    for (int l=0;l<data.getNbSeancesCoursParSemaine();l++){
-                        tab=addBoolVar(tab.length,tab,Cours[i][j][k][l]);
+                    for (int l=0;l<data.promotion.Matieres.length;l++){
+                        for(int m=0;m<data.promotion.Matieres[l].Profs.length;m++) {
+                            tab = addBoolVar(tab.length, tab, Cours[i][j][k][l][m]);
+                        }
                     }
                     model.sum(tab,"<",2).post();
                 }
 
             }
         }
+        //hisa wahda y9ad kol group ya9ra fiha mada wahda
+        for (int i=0;i<data.getNbSeancesHoraireParSemaine();i++){
+            for (int j=0;j<data.getNbSection();j++){
+                BoolVar tab[]=new BoolVar[0];
+                for (int k=0;k<data.getNbSalleCours();k++){
+                    for (int l=0;l<data.promotion.Matieres.length;l++){
+                        for(int m=0;m<data.promotion.Matieres[l].Profs.length;m++) {
+                            tab = addBoolVar(tab.length, tab, Cours[i][j][k][l][m]);
+                        }
+                    }
+                }
+                model.sum(tab,"<",2).post();
+            }
+        }
+        //
+        for (int j=0;j<data.getNbSection();j++){
+            for (int l=0;l<data.promotion.Matieres.length;l++){
+                for(int m=0;m<data.promotion.Matieres[l].Profs.length;m++) {
+                    BoolVar tab[]=new BoolVar[0];
+                    for (int i=0;i<data.getNbSeancesHoraireParSemaine();i++){
+                        for (int k=0;k<data.getNbSalleCours();k++){
+                            tab = addBoolVar(tab.length, tab, Cours[i][j][k][l][m]);
+                        }
+                    }
+                    model.sum(tab,"=", model.intVar( new int[]{0,data.promotion.Matieres[l].NbCoursParSemaine})).post();
+                }
 
+            }
+        }
     }
     public void MixedLesProblem(){
+
         for (int js=0;js<data.getNbSection();js++){
             for (int jg=SumNbGroupDansLesSectionPrecedent(js);jg<(data.promotion.Sections[js].ListeGroupes.length+SumNbGroupDansLesSectionPrecedent(js));jg++){
                 for (int i=0;i< data.getNbSeancesHoraireParSemaine();i++){
                     BoolVar tab[]=new BoolVar[0];
 
                     for (int k=0;k< data.getNbSalleCours();k++){
-                        for (int l=0;l<data.getNbSeancesCoursParSemaine();l++){
-                            tab=addBoolVar(tab.length,tab,Cours[i][js][k][l]);
+                        for (int l=0;l<data.promotion.Matieres.length;l++){
+                            for(int m=0;m<data.promotion.Matieres[l].Profs.length;m++){
+                                tab=addBoolVar(tab.length,tab,Cours[i][js][k][l][m]);
+                            }
+
                         }
                     }
                     for (int k=0;k< data.getNbSalleTDs();k++){
-                        for (int l=0;l<data.getNbSeancesTDsParSemaine();l++){
-                            tab=addBoolVar(tab.length,tab,TDs[i][jg][k][l]);
+                        for (int l=0;l<data.promotion.Matieres.length;l++){
+                            for(int m=0;m<data.promotion.Matieres[l].Profs.length;m++){
+                                tab=addBoolVar(tab.length,tab,TDs[i][jg][k][l][m]);
+                            }
                         }
                     }
                     for (int k=0;k< data.getNbSalleTPs();k++){
-                        for (int l=0;l<data.getNbSeancesTPsParSemaine();l++){
-                            tab=addBoolVar(tab.length,tab,TPs[i][jg][k][l]);
+                        for (int l=0;l<data.promotion.Matieres.length;l++){
+                            for(int m=0;m<data.promotion.Matieres[l].Profs.length;m++){
+                                tab=addBoolVar(tab.length,tab,TPs[i][jg][k][l][m]);
+                            }
                         }
                     }
                     model.sum(tab,"<",2).post();
@@ -209,17 +337,71 @@ public class TTretment2 {
 
             }
         }
+        for (int l=0;l<data.promotion.Matieres.length;l++){
+            for(int m=0;m<data.promotion.Matieres[l].Profs.length;m++){
+                for (int i=0;i< data.getNbSeancesHoraireParSemaine();i++){
+                    BoolVar tab[]=new BoolVar[0];
+                    for (int js=0;js<data.getNbSection();js++){
+                        for (int k=0;k< data.getNbSalleCours();k++){
+                            tab=addBoolVar(tab.length,tab,Cours[i][js][k][l][m]);
+                        }
+                    }
+                    for (int jg=0;jg<data.getNbGroups();jg++){
+                        for (int k=0;k< data.getNbSalleTDs();k++){
+                            tab=addBoolVar(tab.length,tab,TDs[i][jg][k][l][m]);
+                        }
+                        for (int k=0;k< data.getNbSalleTPs();k++){
+                            tab=addBoolVar(tab.length,tab,TPs[i][jg][k][l][m]);
+                        }
+                    }
+                    model.sum(tab,"<",2).post();
+                }
+            }
+        }
+       /* for (int js=0;js<data.getNbSection();js++){
+            for (int jg=0;jg<data.getNbGroups();jg++){
+                for (int i=0;i< data.getNbSeancesHoraireParSemaine();i++){
+                    BoolVar tab[]=new BoolVar[0];
+
+                    for (int k=0;k< data.getNbSalleCours();k++){
+
+                                tab=addBoolVar(tab.length,tab,Cours[i][js][k][l][m]);
+                            }
+
+                        }
+                    }
+                    for (int k=0;k< data.getNbSalleTDs();k++){
+                        for (int l=0;l<data.promotion.Matieres.length;l++){
+                            for(int m=0;m<data.promotion.Matieres[l].Profs.length;m++){
+                                tab=addBoolVar(tab.length,tab,TDs[i][jg][k][l][m]);
+                            }
+                        }
+                    }
+                    for (int k=0;k< data.getNbSalleTPs();k++){
+                        for (int l=0;l<data.promotion.Matieres.length;l++){
+                            for(int m=0;m<data.promotion.Matieres[l].Profs.length;m++){
+                                tab=addBoolVar(tab.length,tab,TPs[i][jg][k][l][m]);
+                            }
+                        }
+                    }
+                    model.sum(tab,"<",2).post();
+                }
+
+            }
+        }*/
     }
     public void AfficheTds(){
         System.out.println("\nTD: ");
         for (int i=0;i<data.getNbSeancesHoraireParSemaine();i++){
             for (int j=0;j<data.getNbGroups();j++){
-                for (int l=0;l<data.getNbSeancesTDsParSemaine();l++){
+                for (int l=0;l<data.promotion.Matieres.length;l++){
                     for (int k=0;k<data.getNbSalleTDs();k++){
-
-                        if ( TDs[i][j][k][l].getValue()==1){
-                            System.out.println("le group "+(j+1)+" fair la seanse "+(l+1)+" dans la salle "+(k+1)+" pendant la seanse "+(i+1));
+                        for (int m=0;m<data.promotion.Matieres[l].Profs.length;m++){
+                            if ( TDs[i][j][k][l][m].getValue()==1){
+                                System.out.println("le group "+(j+1)+" fair la seanse "+(l+1)+" dans la salle "+(k+1)+" pendant la seanse "+(i+1)+" par le prof "+(m+1));
+                            }
                         }
+
                     }
                 }
             }
@@ -229,11 +411,12 @@ public class TTretment2 {
         System.out.println("\nTP: ");
         for (int i=0;i<data.getNbSeancesHoraireParSemaine();i++){
             for (int j=0;j<data.getNbGroups();j++){
-                for (int l=0;l<data.getNbSeancesTPsParSemaine();l++){
-                    for (int k=0;k<data.getNbSalleTDs();k++){
-
-                        if ( TPs[i][j][k][l].getValue()==1){
-                            System.out.println("le group "+(j+1)+" fair la seanse "+(l+1)+" dans la salle "+(k+1)+" pendant la seanse "+(i+1));
+                for (int l=0;l<data.promotion.Matieres.length;l++){
+                    for (int k=0;k<data.getNbSalleTPs();k++){
+                        for (int m=0;m<data.promotion.Matieres[l].Profs.length;m++){
+                            if ( TPs[i][j][k][l][m].getValue()==1){
+                                System.out.println("le group "+(j+1)+" fair la seanse "+(l+1)+" dans la salle "+(k+1)+" pendant la seanse "+(i+1)+" par le prof "+(m+1));
+                            }
                         }
                     }
                 }
@@ -244,12 +427,14 @@ public class TTretment2 {
         System.out.println("\nCours: ");
         for (int i=0;i<data.getNbSeancesHoraireParSemaine();i++){
             for (int j=0;j<data.getNbSection();j++){
-                for (int l=0;l<data.getNbSeancesCoursParSemaine();l++){
+                for (int l=0;l<data.promotion.Matieres.length;l++){
                     for (int k=0;k<data.getNbSalleCours();k++){
-
-                        if ( Cours[i][j][k][l].getValue()==1){
-                            System.out.println("la section "+(j+1)+" fair la seanse "+(l+1)+" dans la salle "+(k+1)+" pendant la seanse "+(i+1));
+                        for(int m=0;m<data.promotion.Matieres[l].Profs.length;m++){
+                            if ( Cours[i][j][k][l][m].getValue()==1){
+                                System.out.println("la section "+(j+1)+" fair la seanse "+(l+1)+" dans la salle "+(k+1)+" pendant la seanse "+(i+1)+" par le prof "+(m+1));
+                            }
                         }
+
                     }
                 }
             }
@@ -273,34 +458,36 @@ public class TTretment2 {
         return newarr;
     }
     public void printemploi(){
-
         for (int i=0;i<data.getNbSeancesHoraireParSemaine();i++){
             if (data.getJourDeSeanse(i)[1]==0){
                 System.out.println(data.promotion.Journees[data.getJourDeSeanse(i)[0]].Intitule+" : ");
             }
             System.out.print("seanse "+(data.getJourDeSeanse(i)[1]+1)+" -> ");
             for (int j=0;j<data.getNbSection();j++){
-                for (int l=0;l<data.getNbSeancesCoursParSemaine();l++){
+                for (int l=0;l<data.promotion.Matieres.length;l++){
                     for (int k=0;k<data.getNbSalleCours();k++){
-                        if ( Cours[i][j][k][l].getValue()==1){
-                            System.out.print("Cour: "+data.promotion.Sections[j].Intitule+" "+data.promotion.Matieres[getmodule(l,1)].Intitule+"("+data.promotion.Occupation.SallesCours[k]+")  |");
-                        }
+                        for(int m=0;m<data.promotion.Matieres[l].Profs.length;m++)
+                            if ( Cours[i][j][k][l][m].getValue()==1){
+                                System.out.print("Cour: "+data.promotion.Sections[j].Intitule+" "+data.promotion.Matieres[l].Intitule+"("+data.promotion.Occupation.SallesCours[k]+") "+data.promotion.Matieres[l].Profs[m]+" | ");
+                            }
                     }
                 }
             }
             for (int j=0;j<data.getNbGroups();j++){
-                for (int l=0;l<data.getNbSeancesTPsParSemaine();l++){
+                for (int l=0;l<data.promotion.Matieres.length;l++){
                     for (int k=0;k<data.getNbSalleTPs();k++){
-                        if ( TPs[i][j][k][l].getValue()==1){
-                            System.out.print("TP: "+data.promotion.Sections[data.getSectionDeGroup(j)[0]].ListeGroupes[data.getSectionDeGroup(j)[1]]+" "+data.promotion.Matieres[getmodule(l,3)].Intitule+"("+data.promotion.Occupation.SallesTD[k]+")  |");
-                        }
+                        for(int m=0;m<data.promotion.Matieres[l].Profs.length;m++)
+                            if ( TPs[i][j][k][l][m].getValue()==1){
+                                System.out.print("TP: "+data.promotion.Sections[data.getSectionDeGroup(j)[0]].ListeGroupes[data.getSectionDeGroup(j)[1]]+" "+data.promotion.Matieres[l].Intitule+"("+data.promotion.Occupation.SallesTP[k]+") "+data.promotion.Matieres[l].Profs[m]+" | ");
+                            }
                     }
                 }
-                for (int l=0;l<data.getNbSeancesTDsParSemaine();l++){
+                for (int l=0;l<data.promotion.Matieres.length;l++){
                     for (int k=0;k<data.getNbSalleTDs();k++){
-                        if ( TDs[i][j][k][l].getValue()==1){
-                            System.out.print("TD: "+data.promotion.Sections[data.getSectionDeGroup(j)[0]].ListeGroupes[data.getSectionDeGroup(j)[1]]+" "+data.promotion.Matieres[getmodule(l,2)].Intitule+"("+data.promotion.Occupation.SallesTP[k]+")  |");
-                        }
+                        for(int m=0;m<data.promotion.Matieres[l].Profs.length;m++)
+                            if ( TDs[i][j][k][l][m].getValue()==1){
+                                System.out.print("TD: "+data.promotion.Sections[data.getSectionDeGroup(j)[0]].ListeGroupes[data.getSectionDeGroup(j)[1]]+" "+data.promotion.Matieres[l].Intitule+"("+data.promotion.Occupation.SallesTD[k]+") "+data.promotion.Matieres[l].Profs[m]+" | ");
+                            }
                     }
                 }
             }
