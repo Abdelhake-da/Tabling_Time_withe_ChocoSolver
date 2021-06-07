@@ -3,8 +3,7 @@ package com.company;
 public class TData {
     TPromotion promotion=new TPromotion("L3");
     public TData(){
-
-        promotion.Matieres= new TMatiere[]{
+       /* promotion.Matieres= new TMatiere[]{
                 new TMatiere("bdd"   , 2, 3, 1,new String[]{"PBBD1","PBBD2"}),
                 new TMatiere("thl"   , 2, 2, 1,new String[]{"PTHL1","PTHL2"}),
                 new TMatiere("rc"    , 2, 2, 1,new String[]{"PRC1","PRC2"}),
@@ -27,7 +26,7 @@ public class TData {
         promotion.Sections=new TSection[]{
                 new TSection("S1",new String[]{"G1","G2","G3"}),
                 new TSection("S2",new String[]{"G4","G5","G6"})
-        };
+        };*/
     }
     public int getNbSalleCours(){
         return promotion.Occupation.SallesCours.length;
@@ -37,27 +36,6 @@ public class TData {
     }
     public int getNbSalleTPs(){
         return promotion.Occupation.SallesTP.length;
-    }
-    public int getNbSeancesCoursParSemaine(){
-        int somme=0;
-        for (int i=0;i<promotion.Matieres.length;i++){
-            somme+=promotion.Matieres[i].NbCoursParSemaine;
-        }
-        return somme;
-    }
-    public int getNbSeancesTDsParSemaine(){
-        int somme=0;
-        for (int i=0;i<promotion.Matieres.length;i++){
-            somme+=promotion.Matieres[i].NbTDsParSemaine;
-        }
-        return somme;
-    }
-    public int getNbSeancesTPsParSemaine(){
-        int somme=0;
-        for (int i=0;i<promotion.Matieres.length;i++){
-            somme+=promotion.Matieres[i].NbTPsParSemaine;
-        }
-        return somme;
     }
     public int getNbSeancesHoraireParSemaine(){
         int somme=0;
@@ -99,13 +77,6 @@ public class TData {
             }
         }
         return new int[]{0,0};
-    }
-    public int getLeNombreTotaleDesProf(){
-        int somme=0;
-        for (int i=0;i<promotion.Matieres.length;i++){
-            somme+=promotion.Matieres[i].Profs.length;
-            }
-        return somme;
     }
     public int getLeNombreMaxDesProf(){
         int max=0;

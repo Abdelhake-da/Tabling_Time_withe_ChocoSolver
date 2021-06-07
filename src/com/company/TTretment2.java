@@ -31,9 +31,9 @@ public class TTretment2 {
 
         solver.findSolution();
         printemploi();
-        AfficheTds();
-        AfficheTps();
-        AfficheCours();
+//        AfficheTds();
+//        AfficheTps();
+//        AfficheCours();
 
     }
     public void SolvetLeProblemDeTDs(){
@@ -49,7 +49,7 @@ public class TTretment2 {
                 }
             }
         }
-        //fi seanse wahda may9adoch ya9ro des group ktar mal li salle li kaynin
+        //Dans une session, on ne peut enseigner plus de groupes que le nombre de salles
         for (int i=0;i<data.getNbSeancesHoraireParSemaine();i++){
             for (int k=0;k<data.getNbSalleTDs();k++){
                 BoolVar tab[]=new BoolVar[0];
@@ -62,9 +62,8 @@ public class TTretment2 {
                 }
                 model.sum(tab,"<",2).post();
             }
-
         }
-        //kol group y9ad ya9ra mada wahda ta3 td fi ga3 lhisas
+        //Le groupe ne peut pas étudier plus que le total de ses sessions (Tps, Tds, Cours)
         for (int j=0;j<data.getNbGroups();j++){
             for (int l=0;l<data.promotion.Matieres.length;l++){
                 BoolVar tab[]=new BoolVar[0];
@@ -79,8 +78,7 @@ public class TTretment2 {
                 model.sum(tab,"=",data.promotion.Matieres[l].NbTDsParSemaine).post();
             }
         }
-
-        //fi hisa wahda w group wahad w salle wahda tan9ra mada wahda
+        //Pour chaque session, groupe et salle, nous pouvons enseigner une seul matière
         for (int i=0;i<data.getNbSeancesHoraireParSemaine();i++){
             for (int j=0;j<data.getNbGroups();j++){
                 for (int k=0;k<data.getNbSalleTDs();k++){
@@ -95,21 +93,7 @@ public class TTretment2 {
 
             }
         }
-        //hisa wahda y9ad kol group ya9ra fiha mada wahda
-        for (int i=0;i<data.getNbSeancesHoraireParSemaine();i++){
-            for (int j=0;j<data.getNbGroups();j++){
-                BoolVar tab[]=new BoolVar[0];
-                for (int k=0;k<data.getNbSalleTDs();k++){
-                    for (int l=0;l<data.promotion.Matieres.length;l++){
-                        for(int m=0;m<data.promotion.Matieres[l].Profs.length;m++) {
-                            tab = addBoolVar(tab.length, tab, TDs[i][j][k][l][m]);
-                        }
-                    }
-                }
-                model.sum(tab,"<",2).post();
-            }
-        }
-        //
+        //Chaque groupe étudie toutes les leçons d'une matière(Tds ou Tps ou Cours) par un enseignant
         for (int j=0;j<data.getNbGroups();j++){
             for (int l=0;l<data.promotion.Matieres.length;l++){
                 for(int m=0;m<data.promotion.Matieres[l].Profs.length;m++) {
@@ -138,7 +122,7 @@ public class TTretment2 {
                 }
             }
         }
-        //fi seanse wahda may9adoch ya9ro des group ktar mal li salle li kaynin
+        //Dans une session, on ne peut enseigner plus de groupes que le nombre de salles
         for (int i=0;i<data.getNbSeancesHoraireParSemaine();i++){
             for (int k=0;k<data.getNbSalleTPs();k++){
                 BoolVar tab[]=new BoolVar[0];
@@ -153,7 +137,7 @@ public class TTretment2 {
             }
 
         }
-        //kol group y9ad ya9ra mada wahda ta3 td fi ga3 lhisas
+        //Le groupe ne peut pas étudier plus que le total de ses sessions (Tps, Tds, Cours)
         for (int j=0;j<data.getNbGroups();j++){
             for (int l=0;l<data.promotion.Matieres.length;l++){
                 BoolVar tab[]=new BoolVar[0];
@@ -169,7 +153,7 @@ public class TTretment2 {
             }
         }
 
-        //fi hisa wahda w group wahad w salle wahda tan9ra mada wahda
+        //Pour chaque session, groupe et salle, nous pouvons enseigner une seul matière
         for (int i=0;i<data.getNbSeancesHoraireParSemaine();i++){
             for (int j=0;j<data.getNbGroups();j++){
                 for (int k=0;k<data.getNbSalleTPs();k++){
@@ -184,21 +168,7 @@ public class TTretment2 {
 
             }
         }
-        //hisa wahda y9ad kol group ya9ra fiha mada wahda
-        for (int i=0;i<data.getNbSeancesHoraireParSemaine();i++){
-            for (int j=0;j<data.getNbGroups();j++){
-                BoolVar tab[]=new BoolVar[0];
-                for (int k=0;k<data.getNbSalleTPs();k++){
-                    for (int l=0;l<data.promotion.Matieres.length;l++){
-                        for(int m=0;m<data.promotion.Matieres[l].Profs.length;m++) {
-                            tab = addBoolVar(tab.length, tab, TPs[i][j][k][l][m]);
-                        }
-                    }
-                }
-                model.sum(tab,"<",2).post();
-            }
-        }
-        //
+        //Chaque groupe étudie toutes les leçons d'une matière(Tds ou Tps ou Cours) par un enseignant
         for (int j=0;j<data.getNbGroups();j++){
             for (int l=0;l<data.promotion.Matieres.length;l++){
                 for(int m=0;m<data.promotion.Matieres[l].Profs.length;m++) {
@@ -227,7 +197,7 @@ public class TTretment2 {
                 }
             }
         }
-        //fi seanse wahda may9adoch ya9ro des group ktar mal li salle li kaynin
+        //Dans une session, on ne peut enseigner plus de groupes que le nombre de salles
         for (int i=0;i<data.getNbSeancesHoraireParSemaine();i++){
             for (int k=0;k<data.getNbSalleCours();k++){
                 BoolVar tab[]=new BoolVar[0];
@@ -242,7 +212,8 @@ public class TTretment2 {
             }
 
         }
-        //kol group y9ad ya9ra mada wahda ta3 td fi ga3 lhisas
+
+        //Le groupe ne peut pas étudier plus que le total de ses sessions (Tps, Tds, Cours)
         for (int j=0;j<data.getNbSection();j++){
             for (int l=0;l<data.promotion.Matieres.length;l++){
                 BoolVar tab[]=new BoolVar[0];
@@ -258,7 +229,7 @@ public class TTretment2 {
             }
         }
 
-        //fi hisa wahda w group wahad w salle wahda tan9ra mada wahda
+        //Pour chaque session, groupe et salle, nous pouvons enseigner une seul matière
         for (int i=0;i<data.getNbSeancesHoraireParSemaine();i++){
             for (int j=0;j<data.getNbSection();j++){
                 for (int k=0;k<data.getNbSalleCours();k++){
@@ -273,21 +244,8 @@ public class TTretment2 {
 
             }
         }
-        //hisa wahda y9ad kol group ya9ra fiha mada wahda
-        for (int i=0;i<data.getNbSeancesHoraireParSemaine();i++){
-            for (int j=0;j<data.getNbSection();j++){
-                BoolVar tab[]=new BoolVar[0];
-                for (int k=0;k<data.getNbSalleCours();k++){
-                    for (int l=0;l<data.promotion.Matieres.length;l++){
-                        for(int m=0;m<data.promotion.Matieres[l].Profs.length;m++) {
-                            tab = addBoolVar(tab.length, tab, Cours[i][j][k][l][m]);
-                        }
-                    }
-                }
-                model.sum(tab,"<",2).post();
-            }
-        }
-        //
+
+       //Chaque groupe étudie toutes les leçons d'une matière(Tds ou Tps ou Cours) par un enseignant
         for (int j=0;j<data.getNbSection();j++){
             for (int l=0;l<data.promotion.Matieres.length;l++){
                 for(int m=0;m<data.promotion.Matieres[l].Profs.length;m++) {
@@ -304,7 +262,7 @@ public class TTretment2 {
         }
     }
     public void MixedLesProblem(){
-
+        //Les groupes appartenant à un  section ne peuvent pas étudier le cours en même temps que td ou tp
         for (int js=0;js<data.getNbSection();js++){
             for (int jg=SumNbGroupDansLesSectionPrecedent(js);jg<(data.promotion.Sections[js].ListeGroupes.length+SumNbGroupDansLesSectionPrecedent(js));jg++){
                 for (int i=0;i< data.getNbSeancesHoraireParSemaine();i++){
@@ -337,6 +295,7 @@ public class TTretment2 {
 
             }
         }
+        //Chaque enseignant peut enseigner à un groupe en une session
         for (int l=0;l<data.promotion.Matieres.length;l++){
             for(int m=0;m<data.promotion.Matieres[l].Profs.length;m++){
                 for (int i=0;i< data.getNbSeancesHoraireParSemaine();i++){
@@ -358,39 +317,9 @@ public class TTretment2 {
                 }
             }
         }
-       /* for (int js=0;js<data.getNbSection();js++){
-            for (int jg=0;jg<data.getNbGroups();jg++){
-                for (int i=0;i< data.getNbSeancesHoraireParSemaine();i++){
-                    BoolVar tab[]=new BoolVar[0];
 
-                    for (int k=0;k< data.getNbSalleCours();k++){
-
-                                tab=addBoolVar(tab.length,tab,Cours[i][js][k][l][m]);
-                            }
-
-                        }
-                    }
-                    for (int k=0;k< data.getNbSalleTDs();k++){
-                        for (int l=0;l<data.promotion.Matieres.length;l++){
-                            for(int m=0;m<data.promotion.Matieres[l].Profs.length;m++){
-                                tab=addBoolVar(tab.length,tab,TDs[i][jg][k][l][m]);
-                            }
-                        }
-                    }
-                    for (int k=0;k< data.getNbSalleTPs();k++){
-                        for (int l=0;l<data.promotion.Matieres.length;l++){
-                            for(int m=0;m<data.promotion.Matieres[l].Profs.length;m++){
-                                tab=addBoolVar(tab.length,tab,TPs[i][jg][k][l][m]);
-                            }
-                        }
-                    }
-                    model.sum(tab,"<",2).post();
-                }
-
-            }
-        }*/
     }
-    public void AfficheTds(){
+    /*public void AfficheTds(){
         System.out.println("\nTD: ");
         for (int i=0;i<data.getNbSeancesHoraireParSemaine();i++){
             for (int j=0;j<data.getNbGroups();j++){
@@ -439,7 +368,7 @@ public class TTretment2 {
                 }
             }
         }
-    }
+    }*/
     public int SumNbGroupDansLesSectionPrecedent(int SectionActuel){
         int somme=0;
         if (SectionActuel!=0){
@@ -495,43 +424,5 @@ public class TTretment2 {
 
         }
     }
-    public int getmodule(int nseanse,int type){
-        int somme=0;
-        switch (type){
-            case 1:{
-                for (int i=0;i<data.promotion.Matieres.length;i++){
-                    for (int j=0;j<data.promotion.Matieres[i].NbCoursParSemaine;j++){
-                        if (somme==nseanse){
-                            return i;
-                        }
-                        somme++;
-                    }
-                }
-            }
 
-            case 2:{
-                for (int i=0;i<data.promotion.Matieres.length;i++){
-                    for (int j=0;j<data.promotion.Matieres[i].NbTDsParSemaine;j++){
-                        if (somme==nseanse){
-                            return i;
-                        }
-                        somme++;
-                    }
-                }
-            }
-
-            case 3:{
-                for (int i=0;i<data.promotion.Matieres.length;i++){
-                    for (int j=0;j<data.promotion.Matieres[i].NbTPsParSemaine;j++){
-                        if (somme==nseanse){
-                            return i;
-                        }
-                        somme++;
-                    }
-                }
-            }
-
-        }
-        return 0;
-    }
 }

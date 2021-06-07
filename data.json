@@ -1,0 +1,30 @@
+{
+    "Promotion":{
+        "intitule":"l3",
+        "Matieres":[
+            {"intitule":"BD"   ,"nbCoursParSemaine":2,"nbTDsParSemaine": 2,"nbTPsParSemaine":1,"Profs":["BABA HAMED","NAIT BAHLOUL","ADLA"]},
+            {"intitule":"thl"   ,"nbCoursParSemaine":2,"nbTDsParSemaine": 2,"nbTPsParSemaine":1,"Profs":["Barigou","BOURENANE","NAOUI"]},
+            {"intitule":"rc"    ,"nbCoursParSemaine":4,"nbTDsParSemaine": 2,"nbTPsParSemaine":1,"Profs":["KECHAR","GUEZOURI","FOUROUR"]},
+            {"intitule":"poo"   ,"nbCoursParSemaine":2,"nbTDsParSemaine": 0,"nbTPsParSemaine":1,"Profs":["TOUATI","MECHACH"]},
+            {"intitule":"se"   ,"nbCoursParSemaine":2,"nbTDsParSemaine": 2,"nbTPsParSemaine":1,"Profs":["BENYAMINA","BOURENANE","MOKADEM"]},
+            {"intitule":"devweb"    ,"nbCoursParSemaine":2,"nbTDsParSemaine": 0,"nbTPsParSemaine":1,"Profs":["LEBBAH","BENGUEDDACH"]}
+        ]
+        ,
+        "Journee":[
+            {"intitule":"dimanche"  ,"seance":["s1","s2","s3","s4","s5","s6"]},
+            {"intitule":"lundi"     ,"seance":["s1","s2","s3","s4","s5","s6"]},
+            {"intitule":"mardi"     ,"seance":["s1","s2","s3","s4","s5","s6"]},
+            {"intitule":"mercredi"  ,"seance":["s1","s2","s3","s4","s5","s6"]},
+            {"intitule":"jeudi"     ,"seance":["s1","s2","s3","s4","s5","s6"]}
+
+        ]
+        ,
+        "occupation":{"salleCour":["A1"],"salleTD":["304","305","306"],"salleTp":["Salle TP 1","Salle TP 1","Salle TP3"]}
+        ,
+        "section":[
+            {"intitule":"S1","group":["g1","g2","g3"]},
+            {"intitule":"S2","group":["g5","g6","g7"]}
+        ]
+    
+    }
+} 
